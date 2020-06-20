@@ -9,8 +9,8 @@ The old fashioned way to get layer coordinates in ExtendScript in composition sc
 - apply the expression to a temp layer that uses `toWorld()` method
 
 ```javascript
-var targerLayer = thisComp.layer('TARGET LAYER');
-targerLayer.toWorld(targerLayer.anchorPaint);
+var targetLayer = thisComp.layer('TARGET LAYER');
+targetLayer.toWorld(targetLayer.anchorPaint);
 ```
 
 - read expression value and pass it back into ExtendScript,
@@ -27,7 +27,7 @@ That's where LST comes into play - it doesn't use any of this nonsense. LST logi
 
 The `offset` coordinates parameter is optional. If not provided, uses layers Anchor Point value. To get layers top-left corner coordinates, pass in `[0, 0, 0]`.
 
-Both methods return 2 or 3 dimentional `Array`.
+Both methods return 2 or 3 dimensional `Array`.
 
 ## Usage ##
 
