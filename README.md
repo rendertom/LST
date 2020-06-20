@@ -62,15 +62,17 @@ var result = LST.toWorld(layer);
 
 ## Notes ##
 
-There's a slight Z-position error (0.0 <= 0.5) when running `toComp()` method on a 3D layer in the composition with a camera. I wasn't able to find a more robust way to calculate a projected Z position, sorry.
+There's a slight Z-position error (0.0 <= 0.5) when running `LST.toComp()` method on a 3D layer in the composition with a camera. I wasn't able to find a more robust way to calculate a projected Z position, sorry.
 
 LST assumes that the default **FILM SIZE** value is **36.00mm**, as there's no API in After Effects to retrieve this value. Also, when processing a 3D layer inside a composition that contains no active camera, the **FOCAL LENGTH** defaults to **50.00mm** (again, lack of API on AE's side to check if this value is different).
 
 ---
 
 ## Todo ##
-* `fromComp()`: Transform a point from composition scope inco layer scope. 
-* `fromWorld()`: Transform a point from world space to layer space.
+
+* Get `scale` and `rotation` values of the projected layer.
+* `fromComp()`: Transform a point from composition scope into layer scope. 
+* `fromWorld()`: Transform a point from world scope into layer scope.
 
 ---
 
