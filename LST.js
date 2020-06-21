@@ -38,12 +38,11 @@ var LST = (function() {
 	module.toWorld = function(layer, offset) {
 		offset = fixOffset(layer, offset);
 
-		var modelMatrix = getModelMatrix(layer, offset);
-		var result = Matrix.getTranslate(modelMatrix);
-		result[2] *= -1;
-
+		var result = toComp2D(layer, offset);
 		if (!layer.threeDLayer) {
 			result.pop();
+		} else {
+			result[2] *= -1;
 		}
 
 		return result;
@@ -70,94 +69,112 @@ var LST = (function() {
 	}
 
 	function getAOV(composition) {
-		var camera = composition.activeCamera;
-		if (camera && camera.enabled) {
-			return CameraEx.getAOV(camera);
-		} else {
-			return CompositionEx.getAOV();
-		}
-	}
-	
-	function getModelMatrix(layer, offset) {
-		var layerLocalMatrix = LayerEx.getLocalMatrix(layer);
-		var layerWorldMatrix = LayerEx.getWorldMatrix(layer);
-		var offsetMatrix = getOffsetMatrix(offset);
+		var camera, result;
 
-		var modelMatrix = Matrix.multiplyArrayOfMatrices([
-			layerWorldMatrix,
-			layerLocalMatrix,
+		camera = composition.activeCamera;
+		if (camera && camera.enabled) {
+			result = CameraEx.getAOV(camera);
+		} else {
+			result = CompositionEx.getAOV();
+		}
+
+		return result;
+	}
+
+	function getModelMatrix(layer, offset) {
+		var localMatrix, offsetMatrix, result, worldMatrix;
+
+		localMatrix = LayerEx.getLocalMatrix(layer);
+		offsetMatrix = getOffsetMatrix(offset);
+		worldMatrix = LayerEx.getWorldMatrix(layer);
+
+		result = Matrix.multiplyArrayOfMatrices([
+			worldMatrix,
+			localMatrix,
 			offsetMatrix
 		]);
 
-		return modelMatrix;
+		return result;
 	}
 
 	function getOffsetMatrix(offset) {
-		var matrix = Matrix.getIdentity();
-		if (typeof offset !== 'undefined') {
-			matrix = Matrix.translate(matrix, offset[0], offset[1], offset[2]);
-		}
+		var matrix, result;
 
-		return matrix;
+		matrix = Matrix.getIdentity();
+		result = Matrix.translate(matrix, offset[0], offset[1], offset[2]);
+
+		return result;
 	}
 
 	function getProjectedZ(composition) {
-		var camera, z;
+		var camera, result;
 
 		camera = composition.activeCamera;
 		if (camera && camera.enabled) {
-			z = CameraEx.getProjectedZ(camera);
+			result = CameraEx.getProjectedZ(camera);
 		} else {
-			z = CompositionEx.getProjectedZ(composition);
+			result = CompositionEx.getProjectedZ(composition);
 		}
 
-		return z;
+		return result;
 	}
 
 	function getProjectionMatrix(composition) {
-		var projectionMatrix = Matrix.perspective(
-			getAOV(composition),
-			composition.width / composition.height,
-			0.1, 10000
-		);
+		var aov, aspect, far, near, result;
 
-		return projectionMatrix;
+		aov = getAOV(composition);
+		aspect = composition.width / composition.height;
+		far = 10000;
+		near = 0.1;
+
+		result = Matrix.perspective(aov, aspect, near, far);
+
+		return result;
 	}
 
 	function getViewMatrix(composition) {
-		var camera, viewMatrix;
+		var camera, result;
 
 		camera = composition.activeCamera;
 		if (camera && camera.enabled) {
-			viewMatrix = CameraEx.getViewMatrix(camera);
+			result = CameraEx.getViewMatrix(camera);
 		} else {
-			viewMatrix = CompositionEx.getViewMatrix(composition);
+			result = CompositionEx.getViewMatrix(composition);
 		}
 
-		return viewMatrix;
+		return result;
 	}
 
 	function toComp2D(layer, offset) {
-		var modelMatrix = getModelMatrix(layer, offset);
-		return Matrix.getTranslate(modelMatrix);
+		var modelMatrix, result;
+
+		modelMatrix = getModelMatrix(layer, offset);
+		result = Matrix.getTranslate(modelMatrix);
+
+		return result;
 	}
 
 	function toComp3D(layer, offset) {
-		var modelMatrix = getModelMatrix(layer, offset);
-		var viewMatrix = getViewMatrix(layer.containingComp);
-		var projectionMatrix = getProjectionMatrix(layer.containingComp);
+		var modelMatrix, mvp, projectionMatrix, result, viewMatrix;
 
-		var mvp = Matrix.multiplyArrayOfMatrices([
+		modelMatrix = getModelMatrix(layer, offset);
+		viewMatrix = getViewMatrix(layer.containingComp);
+		projectionMatrix = getProjectionMatrix(layer.containingComp);
+
+		// Modev-View-Projection
+		mvp = Matrix.multiplyArrayOfMatrices([
 			projectionMatrix,
 			Matrix.invert(viewMatrix),
 			modelMatrix,
 		]);
 
-		return toScreenCoordinates(mvp, layer.containingComp);
+		result = toScreenCoordinates(mvp, layer.containingComp);
+
+		return result;
 	}
 
 	function toScreenCoordinates(mvp, composition) {
-		var ndc, x, y, z, w;
+		var ndc, result, x, y, z, w;
 
 		w = mvp[15];
 		ndc = Matrix.getTranslate(mvp) / w;
@@ -166,6 +183,8 @@ var LST = (function() {
 		y = (ndc[1] + 1) * composition.height / 2;
 		z = getProjectedZ(composition);
 
-		return [x, y, z];
+		result = [x, y, z];
+
+		return result;
 	}
 })();
