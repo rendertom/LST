@@ -69,6 +69,15 @@ var LST = (function() {
 		return offset;
 	}
 
+	function getAOV(composition) {
+		var camera = composition.activeCamera;
+		if (camera && camera.enabled) {
+			return CameraEx.getAOV(camera);
+		} else {
+			return CompositionEx.getAOV();
+		}
+	}
+	
 	function getModelMatrix(layer, offset) {
 		var layerLocalMatrix = LayerEx.getLocalMatrix(layer);
 		var layerWorldMatrix = LayerEx.getWorldMatrix(layer);
@@ -113,15 +122,6 @@ var LST = (function() {
 		);
 
 		return projectionMatrix;
-
-		function getAOV(composition) {
-			var camera = composition.activeCamera;
-			if (camera && camera.enabled) {
-				return CameraEx.getAOV(camera);
-			} else {
-				return CompositionEx.getAOV();
-			}
-		}
 	}
 
 	function getViewMatrix(composition) {
