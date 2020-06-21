@@ -11,9 +11,9 @@ var LST = (function() {
 	var module = {};
 	/**
 	 * Transforms a point from layer scope into composition scope.
-	 * @param  {LayerObject} 	layer  	Layer
-	 * @param  {Array} 			offset 	Point coordinates, optional. Defaults to layers anchor point value.
-	 * @return {Array}        			Points coordinates in composition scope.
+	 * @param  {LayerObject}    layer     Layer
+	 * @param  {Array}          offset    Point coordinates, optional. Defaults to layers anchor point value.
+	 * @return {Array}                    Points coordinates in composition scope.
 	 */
 	module.toComp = function(layer, offset) {
 		offset = fixOffset(layer, offset);
@@ -31,9 +31,9 @@ var LST = (function() {
 
 	/**
 	 * Transforms a point from layer scope into view-independent world scope.
-	 * @param  {LayerObject} 	layer  	Layer
-	 * @param  {Array} 			offset 	Point coordinates, optional. Defaults to layers anchor point value.
-	 * @return {Array}        			Points coordinates in composition scope.
+	 * @param  {LayerObject}    layer     Layer
+	 * @param  {Array}          offset    Point coordinates, optional. Defaults to layers anchor point value.
+	 * @return {Array}                    Points coordinates in view-independent world scope.
 	 */
 	module.toWorld = function(layer, offset) {
 		offset = fixOffset(layer, offset);
