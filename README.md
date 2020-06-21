@@ -10,7 +10,7 @@ The old fashioned way to get layer coordinates in ExtendScript in composition sc
 
 ```javascript
 var targetLayer = thisComp.layer('TARGET LAYER');
-targetLayer.toWorld(targetLayer.anchorPaint);
+targetLayer.toWorld(targetLayer.anchorPoint);
 ```
 
 - read expression value and pass it back into ExtendScript,
