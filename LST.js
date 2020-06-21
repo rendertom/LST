@@ -75,7 +75,7 @@ var LST = (function() {
 		if (camera && camera.enabled) {
 			result = CameraEx.getAOV(camera);
 		} else {
-			result = CompositionEx.getAOV();
+			result = CompositionEx.getAOV(composition);
 		}
 
 		return result;
