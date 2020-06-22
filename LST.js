@@ -89,9 +89,9 @@ var LST = (function() {
 		worldMatrix = LayerEx.getWorldMatrix(layer);
 
 		result = Matrix.multiplyArrayOfMatrices([
-			worldMatrix,
+			offsetMatrix,
 			localMatrix,
-			offsetMatrix
+			worldMatrix
 		]);
 
 		return result;
@@ -106,14 +106,14 @@ var LST = (function() {
 		return result;
 	}
 
-	function getProjectedZ(composition) {
+	function getProjectedZ(composition, w) {
 		var camera, result;
 
 		camera = composition.activeCamera;
 		if (camera && camera.enabled) {
-			result = CameraEx.getProjectedZ(camera);
+			result = CameraEx.getProjectedZ(camera, w);
 		} else {
-			result = CompositionEx.getProjectedZ(composition);
+			result = CompositionEx.getProjectedZ(composition, w);
 		}
 
 		return result;
@@ -161,11 +161,11 @@ var LST = (function() {
 		viewMatrix = getViewMatrix(layer.containingComp);
 		projectionMatrix = getProjectionMatrix(layer.containingComp);
 
-		// Modev-View-Projection
+		// Model-View-Projection
 		mvp = Matrix.multiplyArrayOfMatrices([
-			projectionMatrix,
-			Matrix.invert(viewMatrix),
 			modelMatrix,
+			Matrix.invert(viewMatrix),
+			projectionMatrix,
 		]);
 
 		result = toScreenCoordinates(mvp, layer.containingComp);
@@ -181,7 +181,7 @@ var LST = (function() {
 
 		x = (ndc[0] + 1) * composition.width / 2;
 		y = (ndc[1] + 1) * composition.height / 2;
-		z = getProjectedZ(composition);
+		z = getProjectedZ(composition, w);
 
 		result = [x, y, z];
 
