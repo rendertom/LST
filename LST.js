@@ -89,9 +89,9 @@ var LST = (function() {
 		worldMatrix = LayerEx.getWorldMatrix(layer);
 
 		result = Matrix.multiplyArrayOfMatrices([
-			worldMatrix,
+			offsetMatrix,
 			localMatrix,
-			offsetMatrix
+			worldMatrix
 		]);
 
 		return result;
@@ -161,11 +161,11 @@ var LST = (function() {
 		viewMatrix = getViewMatrix(layer.containingComp);
 		projectionMatrix = getProjectionMatrix(layer.containingComp);
 
-		// Modev-View-Projection
+		// Model-View-Projection
 		mvp = Matrix.multiplyArrayOfMatrices([
-			projectionMatrix,
-			Matrix.invert(viewMatrix),
 			modelMatrix,
+			Matrix.invert(viewMatrix),
+			projectionMatrix,
 		]);
 
 		result = toScreenCoordinates(mvp, layer.containingComp);
