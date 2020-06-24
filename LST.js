@@ -16,14 +16,17 @@ var LST = (function() {
 	 * @return {Array}                    Points coordinates in composition scope.
 	 */
 	module.toComp = function(layer, offset) {
-		offset = fixOffset(layer, offset);
+		var modelMatrix, mvp, result;
 
-		var result;
+		offset = fixOffset(layer, offset);
+		modelMatrix = getModelMatrix(layer, offset);
+
 		if (!layer.threeDLayer) {
-			result = toComp2D(layer, offset);
+			result = Matrix.getTranslate(modelMatrix);
 			result.pop();
 		} else {
-			result = toComp3D(layer, offset);
+			mvp = getModelViewProjection(modelMatrix, layer.containingComp);
+			result = toScreenCoordinates(mvp, layer.containingComp);
 		}
 
 		return result;
@@ -36,9 +39,12 @@ var LST = (function() {
 	 * @return {Array}                    Points coordinates in view-independent world scope.
 	 */
 	module.toWorld = function(layer, offset) {
-		offset = fixOffset(layer, offset);
+		var modelMatrix, result;
 
-		var result = toComp2D(layer, offset);
+		offset = fixOffset(layer, offset);
+		modelMatrix = getModelMatrix(layer, offset);
+		result = Matrix.getTranslate(modelMatrix);
+
 		if (!layer.threeDLayer) {
 			result.pop();
 		} else {
@@ -97,6 +103,22 @@ var LST = (function() {
 		return result;
 	}
 
+	function getModelViewProjection(modelMatrix, composition) {
+		var projectionMatrix, result, viewMatrix;
+
+		projectionMatrix = getProjectionMatrix(composition);
+		viewMatrix = getViewMatrix(composition);
+
+		// Model-View-Projection
+		result = Matrix.multiplyArrayOfMatrices([
+			modelMatrix,
+			Matrix.invert(viewMatrix),
+			projectionMatrix,
+		]);
+
+		return result;
+	}
+
 	function getOffsetMatrix(offset) {
 		var matrix, result;
 
@@ -141,34 +163,6 @@ var LST = (function() {
 		} else {
 			result = CompositionEx.getViewMatrix(composition);
 		}
-
-		return result;
-	}
-
-	function toComp2D(layer, offset) {
-		var modelMatrix, result;
-
-		modelMatrix = getModelMatrix(layer, offset);
-		result = Matrix.getTranslate(modelMatrix);
-
-		return result;
-	}
-
-	function toComp3D(layer, offset) {
-		var modelMatrix, mvp, projectionMatrix, result, viewMatrix;
-
-		modelMatrix = getModelMatrix(layer, offset);
-		viewMatrix = getViewMatrix(layer.containingComp);
-		projectionMatrix = getProjectionMatrix(layer.containingComp);
-
-		// Model-View-Projection
-		mvp = Matrix.multiplyArrayOfMatrices([
-			modelMatrix,
-			Matrix.invert(viewMatrix),
-			projectionMatrix,
-		]);
-
-		result = toScreenCoordinates(mvp, layer.containingComp);
 
 		return result;
 	}
