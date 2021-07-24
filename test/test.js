@@ -4,9 +4,16 @@
 		// @include '../LST.js'
 
 		var layer = getTargetLayer('TARGET');
-		var result = LST.toComp(layer);
 
-		alert(result);
+		var toComp = LST.toComp(layer);
+		var toWorld = LST.toWorld(layer);
+
+		alert([
+			'LST results:',
+			'toComp():\n' + toComp.join('\n'),
+			'---',
+			'toWorld():\n' + toWorld.join('\n')
+		].join('\n'));
 
 	} catch (error) {
 		handleError(error);
